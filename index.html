@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>THE MENU - UNIVERSAL</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>THE MENU - POLISHED</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
@@ -14,8 +16,7 @@
             color: #e0e0e0;
             font-family: 'VT323', 'Courier New', Courier, monospace;
             overflow: hidden;
-            /* 允许鼠标操作 */
-            touch-action: none; 
+            touch-action: none;
             height: 100vh;
             width: 100vw;
             display: flex;
@@ -23,19 +24,19 @@
             align-items: center;
             user-select: none;
             -webkit-user-select: none;
-            cursor: pointer; /* 电脑上显示手型光标 */
+            cursor: pointer;
         }
 
-        /* 旋转的背景层 */
+        /* 旋转背景层 */
         #bg-layer {
             position: fixed;
             top: -50%; left: -50%; width: 200%; height: 200%;
             z-index: 1;
-            /* 同时尝试加载 png 和 jpg，哪个有显示哪个 */
             background-image: url('./cd_bg.png'), url('./cd_bg.jpg');
             background-size: cover;
             background-position: center;
-            filter: blur(4px) brightness(0.5);
+            /* 稍微调亮一点，配合半透明前景 */
+            filter: blur(4px) brightness(0.7);
             opacity: 1;
             animation: rotateBG 60s linear infinite;
         }
@@ -53,15 +54,18 @@
             max-height: 100%;
         }
 
+        /* UI 元素 */
         .ui-text {
             position: absolute;
             pointer-events: none;
             z-index: 20;
             text-shadow: 2px 2px 0 #000;
+            font-family: 'VT323', monospace;
+            transition: opacity 0.5s;
         }
 
         #top-ui {
-            top: 10%;
+            top: 8%;
             width: 100%;
             display: flex;
             justify-content: center;
@@ -76,40 +80,53 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             box-shadow: 0 0 10px rgba(77,255,77,0.5);
-            font-family: 'VT323', monospace;
         }
 
         #footer-ui {
-            bottom: 20%;
+            bottom: 18%;
             width: 100%;
             text-align: center;
             color: #aaa;
             font-size: 14px;
             z-index: 20;
-            font-family: 'VT323', monospace;
-            opacity: 0.7;
+            opacity: 0.8;
             animation: pulseText 2s infinite;
         }
 
         @keyframes pulseText {
-            0% { opacity: 0.4; }
+            0% { opacity: 0.5; }
             50% { opacity: 1; }
-            100% { opacity: 0.4; }
+            100% { opacity: 0.5; }
         }
 
+        /* 开始画面 - 修改点 1: 透明度调整 */
         #start-screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
+            /* 这里改为 0.6，可以看到后面的背景 */
+            background: rgba(0,0,0,0.6);
             z-index: 100;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            backdrop-filter: blur(10px);
+            /* 毛玻璃效果让文字更清晰，同时保留背景通透感 */
+            backdrop-filter: blur(4px); 
+            /* 修改点 2: 添加过渡动画 */
+            transition: opacity 1.5s ease-out, visibility 1.5s;
         }
-        
+
+        /* 用于淡出的类 */
+        .fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .blink { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+
         #title-container {
             position: absolute;
             bottom: 5%;
@@ -135,7 +152,8 @@
             max-width: 85%;
             overflow: hidden;
             text-overflow: ellipsis;
-            box-shadow: 0 0 10px rgba(77, 143, 255, 0.5);
+            box-shadow: 0 0 15px rgba(77, 143, 255, 0.4);
+            transition: transform 0.1s;
         }
 
         #menu-title {
@@ -144,7 +162,6 @@
             color: #4D8FFF;
             text-shadow: 0 0 15px rgba(77,143,255,0.8);
             letter-spacing: 5px;
-            font-family: 'VT323', monospace;
             line-height: 1;
         }
 
@@ -163,9 +180,9 @@
     <div id="bg-layer"></div>
 
     <div id="start-screen">
-        <h1 style="font-size:40px; color:#4DFF4D; margin-bottom:10px;">THE MENU</h1>
-        <p style="font-size:16px; color:#aaa;">PC & MOBILE COMPATIBLE</p>
-        <p class="blink" style="font-size:24px; color:#fff; margin-top:20px;">[ CLICK / TAP TO START ]</p>
+        <h1 style="font-size:40px; color:#4DFF4D; margin-bottom:10px; text-shadow: 0 0 10px #4DFF4D;">THE MENU</h1>
+        <p style="font-size:16px; color:#ddd; letter-spacing: 1px;">TOUCH TO INITIALIZE</p>
+        <p class="blink" style="font-size:24px; color:#fff; margin-top:20px;">[ START SYSTEM ]</p>
     </div>
 
     <div id="top-ui" class="ui-text">
@@ -175,7 +192,7 @@
     <canvas id="gameCanvas"></canvas>
 
     <div id="footer-ui" class="ui-text">
-        CLICK OR TAP TO SWITCH
+        TAP TO SWITCH TRACK
     </div>
 
     <div id="title-container">
@@ -198,7 +215,15 @@
             laneGap: 0,
             rotationSpeed: 0.003,
             playerAngle: Math.PI / 2,
-            colors: ['#FF4D4D', '#FF9F4D', '#FFE04D', '#4DFF4D', '#4DFFFF', '#9F4DFF'],
+            // 修改点 3: 高饱和度霓虹配色
+            colors: [
+                '#FF0033', // 鲜红
+                '#FF8800', // 亮橙
+                '#FFEA00', // 柠檬黄
+                '#00FF44', // 荧光绿
+                '#00FFFF', // 赛博青
+                '#CC00FF'  // 霓虹紫
+            ],
             dishNames: [
                 "01. おうち (EAINT THAN THAR)",
                 "02. 糸 (LI JIAYU)",
@@ -216,7 +241,7 @@
             foods: [],
             gameTime: 0,
             bgRotation: 0,
-            ripples: []
+            ripples: [] 
         };
 
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -239,15 +264,8 @@
             startBGM();
         }
 
-        // 安全的震动函数
         function vibratePhone(ms) {
-            try {
-                if (navigator.vibrate) {
-                    navigator.vibrate(ms);
-                }
-            } catch(e) {
-                // 电脑不支持震动，忽略错误
-            }
+            try { if (navigator.vibrate) navigator.vibrate(ms); } catch(e) {}
         }
 
         function playScoreSound() {
@@ -268,10 +286,8 @@
         function startBGM() {
             if(!audioCtx || bgmInterval) return;
             const sequence = [
-                220, 0, 261, 0, 
-                329, 0, 293, 0, 
-                196, 0, 220, 0,
-                392, 0, 329, 0
+                220, 0, 261, 0, 329, 0, 293, 0, 
+                196, 0, 220, 0, 392, 0, 329, 0
             ];
             let noteIndex = 0;
 
@@ -314,8 +330,7 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             const minDim = Math.min(canvas.width, canvas.height);
-            // 电脑屏幕通常更大，这里做个适配
-            const maxVisibleRadius = (minDim * 0.35);
+            const maxVisibleRadius = (minDim * 0.36);
             config.laneGap = maxVisibleRadius / (config.laneCount + 1);
             config.baseRadius = config.laneGap * 1.5;
         }
@@ -334,7 +349,7 @@
         const fruitSprites = fruitDesigns.map((d, i) => {
             const sizeX = d.map[0].length;
             const sizeY = d.map.length;
-            const scale = 3;
+            const scale = 3; 
             const c = document.createElement('canvas');
             c.width = sizeX * scale; 
             c.height = sizeY * scale;
@@ -360,7 +375,6 @@
                 ctx.shadowColor = 'rgba(0,0,0,0.5)';
                 ctx.shadowBlur = 5;
                 ctx.fillRect(x - size/2, y - size/2, size, size);
-                ctx.shadowBlur = 0;
                 
                 ctx.fillStyle = '#000';
                 const eyeSize = 4; 
@@ -390,7 +404,7 @@
                         scoreEl.innerText = state.score.toString().padStart(5, '0');
                         this.active = false;
                         playScoreSound();
-                        vibratePhone(10);
+                        vibratePhone(15);
                     }
                 }
                 if (this.angle > config.playerAngle + 0.6) { this.active = false; }
@@ -432,7 +446,6 @@
             if(!state.isPlaying) return;
             
             let x = 0, y = 0;
-            // 兼容鼠标和触摸坐标
             if(e.type === 'touchstart' && e.touches.length > 0) {
                 x = e.touches[0].clientX;
                 y = e.touches[0].clientY;
@@ -463,20 +476,18 @@
 
         startScreen.addEventListener('click', () => {
             state.isPlaying = true;
-            startScreen.style.display = 'none';
+            // 修改点 2: 平滑淡出
+            startScreen.classList.add('fade-out');
+            
             initAudio(); 
             updateUI();
-            // 电脑上一般不需要全屏，但如果支持也可以触发
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen().catch(err => {});
             }
         });
         
-        // 绑定两个事件：触摸和鼠标
         window.addEventListener('touchstart', (e) => { 
-            if(state.isPlaying) { 
-                handleInput(e); 
-            }
+            if(state.isPlaying) { handleInput(e); }
         }, {passive: false});
         
         window.addEventListener('mousedown', (e) => { 
@@ -499,8 +510,9 @@
                 ctx.arc(0, 0, outerRadius, 0, Math.PI * 2);
                 ctx.arc(0, 0, innerRadius, 0, Math.PI * 2, true);
                 
+                // 更高饱和度的半透明填充
                 if (i === state.currentLane) {
-                    ctx.fillStyle = config.colors[i] + '55'; 
+                    ctx.fillStyle = config.colors[i] + '66'; 
                 } else {
                     ctx.fillStyle = config.colors[i] + '22'; 
                 }
@@ -508,7 +520,7 @@
                 
                 ctx.beginPath();
                 ctx.arc(0, 0, (outerRadius + innerRadius) / 2, 0, Math.PI * 2);
-                ctx.strokeStyle = config.colors[i] + '66';
+                ctx.strokeStyle = config.colors[i] + 'AA'; // 边框也更亮
                 ctx.lineWidth = 1;
                 ctx.stroke();
             }
@@ -548,17 +560,16 @@
             
             const barWidth = 12; 
             const gap = 4;
-            const dataCount = 24; 
+            const dataCount = 20; 
             const totalWidth = dataCount * (barWidth + gap);
             const startX = (canvas.width - totalWidth) / 2;
             
             ctx.save();
-            ctx.fillStyle = 'rgba(77, 143, 255, 0.5)';
             
             for (let i = 0; i < dataCount; i++) {
-                const value = dataArray[i + 2] || 0; 
+                const value = dataArray[i + 3] || 0; 
                 const percent = value / 255;
-                const height = percent * 80 + 5; 
+                const height = percent * 100 + 5; 
                 
                 const x = startX + i * (barWidth + gap);
                 const y = canvas.height - height; 
@@ -566,7 +577,7 @@
                 ctx.fillStyle = 'rgba(77, 143, 255, 0.6)';
                 ctx.fillRect(x, y, barWidth, height);
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-                ctx.fillRect(x, y, barWidth, 3);
+                ctx.fillRect(x, y, barWidth, 4);
             }
             ctx.restore();
         }
@@ -612,7 +623,9 @@
 
         function loop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
             drawBackground();
+            
             if (state.isPlaying) {
                 if (state.gameTime % 50 === 0) { state.foods.push(new Food()); }
                 for (let i = state.foods.length - 1; i >= 0; i--) {
@@ -621,9 +634,11 @@
                     if (!state.foods[i].active) { state.foods.splice(i, 1); }
                 }
                 state.gameTime++;
+                
                 drawVisualizer();
                 drawRipples(); 
             }
+            
             player.draw();
             if (state.isPlaying) { applyScreenGlitch(); }
             requestAnimationFrame(loop);
